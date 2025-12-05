@@ -1,85 +1,93 @@
 import { useState } from "react";
 import AuthPage from "./components/AuthPage.jsx";
-import HomeView from "./components/HomeView.jsx";
-import BoardView from "./components/BoardView.jsx"; // tumhara purana board (lists + cards)
+import HomeView from "./components/HomeView.jsx";   // THIS IS YOUR MEETING PAGE
+import BoardView from "./components/BoardView.jsx";
+import defaultBoard from "./defaultBoard.js";
 
-// App component
 export default function App() {
-  // login hua ya nahi
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // kaunsa screen dikhana hai: "auth" | "home" | "board"
   const [screen, setScreen] = useState("auth");
-
-  // konsa meeting open hua hai (future me useful hoga)
   const [activeMeetingId, setActiveMeetingId] = useState(null);
 
-  // ---- Home page ke missions (titles + dates) ----
-  const meetings = [
+  const [meetings, setMeetings] = useState([
     {
       id: 1,
       title: "Angel Grove Defense Briefing",
       plannedAt: "2024-12-03",
+      board: JSON.parse(JSON.stringify(defaultBoard)),
     },
     {
       id: 2,
       title: "Megazord Systems Check",
       plannedAt: "2024-11-29",
+      board: JSON.parse(JSON.stringify(defaultBoard)),
     },
     {
       id: 3,
       title: "Ranger Academy Training Plan",
       plannedAt: "2024-11-23",
+      board: JSON.parse(JSON.stringify(defaultBoard)),
     },
-  ];
+  ]);
 
-  // Auth (sign in / otp) complete hone par
+  // LOGIN SUCCESS
   const handleAuthSuccess = () => {
     setIsLoggedIn(true);
-    setScreen("home"); // login ke turant baad home
-  };
-
-  // HomeView ke card pe click
-  const handleOpenMeeting = (meetingId) => {
-    console.log("Opening meeting:", meetingId);
-    setActiveMeetingId(meetingId);
-    setScreen("board"); // ab board dikhao
-  };
-
-  // Board se back aana ho to
-  const handleBackToHome = () => {
     setScreen("home");
   };
 
-  // ----------------- RENDER LOGIC -----------------
+  // OPEN BOARD VIEW
+  const handleOpenMeeting = (id) => {
+    setActiveMeetingId(id);
+    setScreen("board");
+  };
 
-  // 1) agar login nahi hua, ya humne screen "auth" rakha hai
+  // CREATE NEW MEETING
+  const handleCreateMeeting = () => {
+    const newMeeting = {
+      id: Date.now(),
+      title: "New Mission",
+      plannedAt: new Date().toISOString().split("T")[0],
+      board: JSON.parse(JSON.stringify(defaultBoard)),
+    };
+    setMeetings([...meetings, newMeeting]);
+  };
+
+  // UPDATE BOARD FROM BOARDVIEW
+  const handleUpdateBoard = (updatedBoard) => {
+    setMeetings((prev) =>
+      prev.map((m) =>
+        m.id === activeMeetingId ? { ...m, board: updatedBoard } : m
+      )
+    );
+  };
+
+  // BACK BUTTON
+  const handleBackToHome = () => setScreen("home");
+
+  const activeMeeting = meetings.find((m) => m.id === activeMeetingId);
+
+  // ROUTING
   if (!isLoggedIn || screen === "auth") {
     return <AuthPage onAuthSuccess={handleAuthSuccess} />;
   }
 
-  // 2) login ho chuka hai aur home chahiye
   if (screen === "home") {
     return (
       <HomeView
         meetings={meetings}
         onOpenMeeting={handleOpenMeeting}
+        onCreateMeeting={handleCreateMeeting}
       />
     );
   }
 
-  // 3) board screen: yahan tumhara purana BoardView chalega
-  // props doge to bhi koi problem nahi, agar BoardView unhe ignore kar raha ho.
-  return <BoardView activeMeetingId={activeMeetingId} onBack={handleBackToHome} />;
+  return (
+    <BoardView
+      meeting={activeMeeting}
+      onUpdateBoard={handleUpdateBoard}
+      onBackHome={handleBackToHome}
+    />
+  );
 }
-
-
-
-
-
-
-
-
-
-
 

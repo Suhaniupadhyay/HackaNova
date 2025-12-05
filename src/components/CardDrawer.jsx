@@ -1,106 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-function CardDrawer({ card, onClose, onUpdate }) {
-  // local state: description + deadline
-  const [description, setDescription] = useState(card.description || '');
-  const [deadline, setDeadline] = useState(card.deadline || '');
-  const [commentText, setCommentText] = useState('');
+function CardDrawer({ card, onClose, onUpdateCard }) {
+  const [title, setTitle] = useState(card.title);
+  const [description, setDescription] = useState(card.description || "");
 
-  const handleSave = () => {
-    const updatedCard = {
-      ...card,
-      description,
-      deadline: deadline || null,
-    };
-    onUpdate(updatedCard); // 👉 BoardView ko bata rahe hain ki card update ho gaya
+  const handleUpdate = () => {
+    const updatedCard = { ...card, title, description };
+    onUpdateCard(updatedCard);
     onClose();
   };
 
   return (
-    <aside className="fixed right-0 top-0 bottom-0 w-full sm:w-96 bg-[var(--ranger-surface)] shadow-ranger-glow p-4 z-50 overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">{card.title}</h2>
-        <button
-          className="text-sm text-gray-300 hover:text-white"
-          onClick={onClose}
-        >
-          ✕ Close
-        </button>
-      </div>
+    <div
+      className="fixed inset-0 z-50 flex justify-end bg-black/50"
+      onClick={onClose}
+    >
+      {/* Drawer Panel */}
+      <div
+        className="w-96 h-full p-6 flex flex-col text-black shadow-2xl transition-transform duration-300"
+        style={{
+          background: "linear-gradient(180deg, #ffd1e3 0%, #ffb6d5 100%)", // baby pink gradient
+          borderLeft: "6px solid #8b00ff", // purple accent
+          borderTopLeftRadius: "30px",
+          borderBottomLeftRadius: "30px",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-gray-400">
+          <h2 className="text-2xl font-bold">{title || "Untitled Card"}</h2>
 
-      {/* Description */}
-      <div className="mb-4">
-        <h3 className="text-sm text-gray-300 mb-1">Description</h3>
-        <textarea
-          className="w-full min-h-[80px] text-sm bg-black/30 rounded px-2 py-1 outline-none"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe this mission..."
-        />
-      </div>
-
-      {/* 👉 Deadline field */}
-      <div className="mb-4">
-        <h3 className="text-sm text-gray-300 mb-1">Deadline</h3>
-        <input
-          type="datetime-local"
-          className="w-full text-sm bg-black/30 rounded px-2 py-1 outline-none"
-          value={deadline || ''}
-          onChange={(e) => setDeadline(e.target.value)}
-        />
-        <p className="text-[11px] text-gray-400 mt-1">
-          Set mission deadline. We will highlight cards that are due today or overdue.
-        </p>
-      </div>
-
-      {/* Comments (abhi sirf UI demo) */}
-      <div className="mb-4">
-        <h3 className="text-sm text-gray-300 mb-1">Comments (UI only)</h3>
-        <div className="space-y-2 mb-2 max-h-32 overflow-y-auto">
-          {card.comments?.length === 0 && (
-            <div className="text-xs text-gray-400">No comments yet.</div>
-          )}
+          <button
+            onClick={onClose}
+            className="text-lg font-bold px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
+          >
+            ✕
+          </button>
         </div>
-        <input
-          className="w-full text-sm bg-black/30 rounded px-2 py-1 outline-none"
-          placeholder="Type a comment (for now just UI)..."
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-        />
-      </div>
 
-      {/* Attachments (sirf demo) */}
-      <div className="mb-6">
-        <h3 className="text-sm text-gray-300 mb-1">Attachments (UI only)</h3>
-        <input
-          type="file"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (!f) return;
-            alert('Future: upload this file to backend: ' + f.name);
-          }}
-        />
-      </div>
+        {/* Editable Title Field */}
+        <div className="mt-4">
+          <label className="font-semibold text-gray-800">Title:</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 mt-1 border-2 border-purple-400 rounded-xl bg-white"
+          />
+        </div>
 
-      {/* Save button */}
-      <div className="flex justify-end gap-2">
-        <button
-          className="px-3 py-1 text-sm rounded bg-gray-600 hover:bg-gray-500"
-          onClick={onClose}
+        {/* Description Section */}
+        <div className="mt-4 flex flex-col">
+          <label className="font-semibold text-gray-800">Description:</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="p-2 border-2 border-purple-400 rounded-xl bg-white h-32 resize-none"
+            placeholder="Add more details..."
+          />
+        </div>
+
+        {/* Created by */}
+        <div className="mt-6 text-sm">
+          <span className="font-semibold text-gray-700">Created by:</span>
+          <span className="font-medium ml-1">{card.createdBy}</span>
+        </div>
+
+        {/* Image-styled bottom section */}
+        <div
+          className="mt-6 p-4 rounded-xl border-2 border-purple-300 bg-purple-100"
+          style={{ fontSize: "14px" }}
         >
-          Cancel
-        </button>
-        <button
-          className="px-3 py-1 text-sm rounded bg-ranger-blue hover:bg-blue-500"
-          onClick={handleSave}
-        >
-          Save
-        </button>
+          <p className="font-semibold">Sample Preview Section:</p>
+          <input
+            type="text"
+            readOnly
+            value="Example UI element…"
+            className="w-full p-1 mt-2 rounded border border-purple-300 bg-white"
+          />
+          <div className="text-xs mt-1">Created by: {card.createdBy}</div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3 mt-auto pt-4 border-t border-gray-400">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-full bg-gray-300 hover:bg-gray-400 transition text-black"
+          >
+            Close
+          </button>
+
+          <button
+            onClick={handleUpdate}
+            className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 transition text-white"
+          >
+            Update
+          </button>
+        </div>
       </div>
-    </aside>
+    </div>
   );
 }
 
 export default CardDrawer;
-
-
