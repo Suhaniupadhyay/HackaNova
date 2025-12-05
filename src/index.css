@@ -1,0 +1,35 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Basic global setup */
+:root {
+  --ranger-bg: #050816;
+  --ranger-surface: #0b1020;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #e5e7eb;
+}
+
+/* Home & mission big title – blue gradient, LinoText style */
+.ranger-home-title {
+  font-family: "LinoText", "Cinzel", "Georgia", serif;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, #0036a5 0%, #005fff 45%, #0090ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+
+
+
+
+
