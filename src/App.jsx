@@ -1,10 +1,15 @@
 import { useState } from "react";
+import SplashScreen from "./components/SplashScreen.jsx";
 import AuthPage from "./components/AuthPage.jsx";
-import HomeView from "./components/HomeView.jsx";   // THIS IS YOUR MEETING PAGE
+import HomeView from "./components/HomeView.jsx";
 import BoardView from "./components/BoardView.jsx";
 import defaultBoard from "./defaultBoard.js";
 
 export default function App() {
+
+  // NEW: splash screen state  
+  const [showSplash, setShowSplash] = useState(true);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [screen, setScreen] = useState("auth");
   const [activeMeetingId, setActiveMeetingId] = useState(null);
@@ -62,12 +67,17 @@ export default function App() {
     );
   };
 
-  // BACK BUTTON
   const handleBackToHome = () => setScreen("home");
 
   const activeMeeting = meetings.find((m) => m.id === activeMeetingId);
 
-  // ROUTING
+  // 🔥 NEW: Show splash first
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
+
+  // ROUTING BELOW
+
   if (!isLoggedIn || screen === "auth") {
     return <AuthPage onAuthSuccess={handleAuthSuccess} />;
   }
@@ -90,4 +100,3 @@ export default function App() {
     />
   );
 }
-
